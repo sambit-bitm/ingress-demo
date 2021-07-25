@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: zoneprinter-1
+  name: zoneprinter-1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: zoneprinter-1
+  template:
+    metadata:
+      labels:
+        app: zoneprinter-1
+    spec:
+      containers:
+      - image: gcr.io/google-samples/zone-printer:0.2
+        name: zone-printer-1
+        ports:
+        - containerPort: 8080
+
