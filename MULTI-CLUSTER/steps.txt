@@ -1,5 +1,7 @@
 
 project: sambit-gke-training
+Check Anthos api is enabled
+=====
 gcloud services list --project=sambit-gke-training| grep anthos.googleapis.com
 
 Create clusters
@@ -71,14 +73,10 @@ Create deployments:
 ================
 kubectl config use-context gke-us
 kubectl apply -f deploy-zoneprinter-1.yaml
+kubectl apply -f deploy-zoneprinter-2.yaml
 kubectl config use-context gke-eu
 kubectl apply -f deploy-zoneprinter-1.yaml
-
-kubectl config use-context gke-us
 kubectl apply -f deploy-zoneprinter-2.yaml
-kubectl config use-context gke-eu
-kubectl apply -f deploy-zoneprinter-2.yaml
-
 
 Deploying MCS through the config cluster
 =======
@@ -92,41 +90,40 @@ Deploying MCI through the config cluster
 kubectl apply -f mci.yaml
 
 
+Clean up
+======
+kubectl get mci -n zoneprinter
+kubectl delete mci my-mci -n zoneprinter
+kubectl get mcs -n zoneprinter
+kubectl delete mcs zone-mcs -n zoneprinter
+kubectl delete mcs zone-mcs-hello-world -n zoneprinter
+kubectl config use-context gke-us
+kubectl delete -f deploy-zoneprinter-1.yaml
+kubectl delete -f deploy-zoneprinter-2.yaml
+kubectl delete -f namespace.yaml
+kubectl config use-context gke-eu
+kubectl delete -f deploy-zoneprinter-1.yaml
+kubectl delete -f deploy-zoneprinter-2.yaml
+kubectl delete -f namespace.yaml
 
 
+# gcloud beta container hub ingress disable \
+  --config-membership=projects/project_id/locations/global/memberships/gke-us
 
+Remove membership
+==================
+gcloud container hub memberships list --project=sambit-gke-training
+gcloud container hub memberships delete gke-us --project=sambit-gke-training
+gcloud container hub memberships delete gke-eu --project=sambit-gke-training
 
+Remove  context
+=================
+kubectl config get-contexts
+kubectl config delete-context    gke-eu
+kubectl config delete-context    gke-us
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-	
-	
-	
-	
-	
+Delete clusters
+================
+gcloud container clusters list
+gcloud container clusters delete gke-eu --zone=europe-west1-b
+gcloud container clusters delete gke-us --zone=us-central1-b
