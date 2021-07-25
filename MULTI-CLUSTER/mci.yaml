@@ -6,6 +6,9 @@ metadata:
 spec:
   template:
     spec:
+      backend:
+       serviceName: zone-mcs
+       servicePort: 80
       rules:
       - http:
           paths:
