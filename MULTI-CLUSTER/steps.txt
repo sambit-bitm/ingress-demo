@@ -1,0 +1,132 @@
+
+project: sambit-gke-training
+gcloud services list --project=sambit-gke-training| grep anthos.googleapis.com
+
+Create clusters
+=====
+gcloud container clusters create gke-us \
+    --zone=us-central1-b \
+    --enable-ip-alias \
+    --workload-pool=sambit-gke-training.svc.id.goog \
+    --release-channel=stable \
+    --project=sambit-gke-training
+	
+gcloud container clusters create gke-eu \
+    --zone=europe-west1-b \
+    --enable-ip-alias \
+    --workload-pool=sambit-gke-training.svc.id.goog \
+    --release-channel=stable \
+    --project=sambit-gke-training
+	
+Get credentials
+=====
+gcloud container clusters get-credentials gke-us \
+    --zone=us-central1-b \
+    --project=sambit-gke-training
+
+gcloud container clusters get-credentials gke-eu \
+    --zone=europe-west1-b \
+    --project=sambit-gke-training
+	
+Rename the cluster contexts:
+=====
+kubectl config get-contexts                          # display list of contexts 
+kubectl config current-context                       # display the current-context
+kubectl config use-context my-cluster-name 
+
+kubectl config rename-context gke_sambit-gke-training_us-central1-b_gke-us gke-us
+kubectl config rename-context gke_sambit-gke-training_europe-west1-b_gke-eu gke-eu
+
+Register clusters to a fleet
+======
+gcloud container hub memberships list --project=sambit-gke-training
+gcloud container hub memberships delete cluster-name --project=sambit-gke-training
+
+gcloud container hub memberships register gke-us \
+    --gke-cluster us-central1-b/gke-us \
+    --enable-workload-identity \
+    --project=sambit-gke-training
+
+gcloud container hub memberships register gke-eu \
+    --gke-cluster europe-west1-b/gke-eu \
+    --enable-workload-identity \
+    --project=sambit-gke-training
+	
+Specify a config cluster
+=======
+gcloud beta container hub ingress enable \
+  --config-membership=projects/project_id/locations/global/memberships/gke-us
+
+gcloud beta container hub ingress describe
+
+Create a namespace
+====
+Use namespace.yaml
+kubectl config use-context gke-us
+kubectl apply -f namespace.yaml
+kubectl config use-context gke-eu
+kubectl apply -f namespace.yaml
+
+Create deployments:
+================
+kubectl config use-context gke-us
+kubectl apply -f deploy-zoneprinter-1.yaml
+kubectl config use-context gke-eu
+kubectl apply -f deploy-zoneprinter-1.yaml
+
+kubectl config use-context gke-us
+kubectl apply -f deploy-zoneprinter-2.yaml
+kubectl config use-context gke-eu
+kubectl apply -f deploy-zoneprinter-2.yaml
+
+
+Deploying MCS through the config cluster
+=======
+Set the context to the config cluster.
+kubectl config use-context gke-us
+kubectl apply -f mcs.yaml
+kubectl apply -f mcs-helloworld.yaml
+
+Deploying MCI through the config cluster
+=======
+kubectl apply -f mci.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	

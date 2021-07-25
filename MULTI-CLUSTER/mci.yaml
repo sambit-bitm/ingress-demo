@@ -1,0 +1,21 @@
+apiVersion: networking.gke.io/v1
+kind: MultiClusterIngress
+metadata:
+  name: my-mci
+  namespace: zoneprinter
+spec:
+  template:
+    spec:
+      rules:
+      - http:
+          paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              serviceName: zone-mcs
+              servicePort: 80
+          - path: /hello-world
+            pathType: ImplementationSpecific
+            backend:
+              serviceName: zone-mcs-hello-world
+              servicePort: 80

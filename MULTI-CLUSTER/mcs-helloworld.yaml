@@ -1,0 +1,15 @@
+apiVersion: networking.gke.io/v1
+kind: MultiClusterService
+metadata:
+  name: zone-mcs-hello-world
+  namespace: zoneprinter
+spec:
+  template:
+    spec:
+      selector:
+        app: hello-world
+      ports:
+      - name: hello-world
+        protocol: TCP
+        port: 80
+        targetPort: 8888
