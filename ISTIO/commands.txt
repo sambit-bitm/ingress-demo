@@ -1,0 +1,22 @@
+
+create cluster:
+gcloud beta container clusters create my-cluster \
+    --addons=Istio --istio-config=auth=MTLS_PERMISSIVE \
+    --enable-ip-alias \
+    --cluster-version=1.19.9-gke.1900 \
+    --machine-type=e2-small \
+    --num-nodes=4 \
+    --region=us-east1-c
+
+Check cluster:
+gcloud container clusters list
+gcloud container clusters get-credentials my-cluster --zone us-east1-c
+kubectl get service -n istio-system
+kubectl get pods -n istio-system
+kubectl label namespace default  istio-injection=enabled
+
+kubectl apply -f deploy-zoneprinter-1.yaml
+kubectl apply -f svc-zoneprinter-1.yaml
+kubectl apply -f gateway.yaml
+kubectl apply -f virtual-service.yaml
+kubectl get svc istio-ingressgateway -n istio-system
